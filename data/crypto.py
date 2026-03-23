@@ -9,15 +9,24 @@ def get_crypto_price(symbol="BTCUSDT"):
         "limit": 100
     }
 
-    res = requests.get(url, params=params)
-    data = res.json()
+    try:
+        res = requests.get(url, params=params, timeout=10)
+        data = res.json()
 
-    # ✅ Lấy đủ OHLC thật
-    prices = [{
-        'open':  float(candle[1]),
-        'high':  float(candle[2]),
-        'low':   float(candle[3]),
-        'close': float(candle[4]),
-    } for candle in data]
+        # Debug kiểm tra data
+        if not isinstance(data, list):
+            print("API lỗi:", data)
+            return []
 
-    return prices
+        prices = [{
+            'open':  float(candle[1]),
+            'high':  float(candle[2]),
+            'low':   float(candle[3]),
+            'close': float(candle[4]),
+        } for candle in data]
+
+        return prices
+
+    except Exception as e:
+        print("Lỗi crypto:", e)
+        return []
